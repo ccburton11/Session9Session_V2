@@ -1,23 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session 9 — Reframing Reality</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session 9 - Reframing Reality</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        .rail {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            padding: 24px 0;
+            overflow-y: auto;
+            border-right: 1px solid #34495e;
+        }
+
+        .rail-brand {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 0 20px 8px;
+        }
+
+        .rail-sub {
+            font-size: 12px;
+            opacity: 0.7;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #34495e;
+            margin-bottom: 12px;
+        }
+
+        .rail-section {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            opacity: 0.5;
+            padding: 12px 20px 8px;
+            margin-top: 12px;
+        }
+
+        .rail-item {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 13px;
+            transition: all 0.2s;
+            opacity: 0.6;
+        }
+
+        .rail-item:hover {
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .rail-item.active {
+            background: rgba(52, 152, 219, 0.3);
+            opacity: 1;
+            border-left: 3px solid #3498db;
+            padding-left: 17px;
+        }
+
+        .rail-item.visited {
+            opacity: 0.8;
+        }
+
+        .rail-num {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .rail-title {
+            font-size: 13px;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .rail-time {
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        .stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow-y: auto;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .status-mode {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            background: #f0f0f0;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #95a5a6;
+        }
+
+        .status-mode[data-mode="interactive"] .status-dot {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+
+        .status-mode[data-mode="listen"] .status-dot {
+            background: #3498db;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-progress {
+            display: flex;
+            gap: 4px;
+        }
+
+        .status-tick {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ecf0f1;
+        }
+
+        .status-tick.active {
+            background: #3498db;
+            box-shadow: 0 0 6px rgba(52, 152, 219, 0.5);
+        }
+
+        .status-tick.visited {
+            background: #95a5a6;
+        }
+
+        .status-cue {
+            flex: 1;
+            min-width: 200px;
+            color: #7f8c8d;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .screen-content {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .screen-content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .screen-content p {
+            font-size: 16px;
+            color: #555;
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .input-field {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 16px;
+            font-size: 14px;
+            border: 2px solid #e5e5e5;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .button {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .pill {
+            display: inline-block;
+            background: #ecf0f1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            margin: 0 4px;
+        }
+
+        .persisted {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            z-index: 100;
+        }
+    </style>
 </head>
 <body>
-  <div id="root"></div>
+    <div id="root"></div>
 
-  <!-- React & ReactDOM from CDN -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  
-  <!-- Babel for JSX transformation -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-  <!-- Your app code -->
-  <script type="text/babel" src="screens.js"></script>
-  <script type="text/babel" src="app.jsx"></script>
+    <script>
+        const React = window.React;
+        const ReactDOM = window.ReactDOM;
+        const e = React.createElement;
+
+        const SCREENS = [
+            { id: "1.1", title: "Welcome", time: "0:00", mode: "static", phase: "Open" },
+            { id: "1.2", title: '"If Only" generator', time: "0:00", mode: "interactive", phase: "Open" },
+            { id: "1.3", title: "The Bridge", time: "5:00", mode: "listen", phase: "Open" },
+            { id: "2.1", title: "My story, turned around", time: "8:00", mode: "interactive", phase: "Quiet Reflection" },
+            { id: "2.2", title: "The core want", time: "10:00", mode: "interactive", phase: "Quiet Reflection" },
+            { id: "3.1", title: "Breakout 1 · pre-thinking", time: "13:00", mode: "static", phase: "Breakout 1" },
+            { id: "3.2", title: "Breakout 1 · capture", time: "25:00", mode: "interactive", phase: "Breakout 1" },
+            { id: "4.1", title: "Breakout 2 · diagnostic", time: "27:00", mode: "interactive", phase: "Breakout 2" },
+            { id: "4.2", title: "Breakout 2 · capture", time: "37:00", mode: "interactive", phase: "Breakout 2" },
+            { id: "5.1", title: "Whole-group discussion", time: "37:00", mode: "listen", phase: "Discussion" },
+            { id: "6.1", title: "Commitment", time: "42:00", mode: "interactive", phase: "Close" }
+        ];
+
+        const FACILITATOR_CUES = {
+            "1.1": "Keep this open throughout the session.",
+            "1.2": "Open your screen and fill in the sentence. Be honest, be petty, be ridiculous.",
+            "1.3": "Look up for a minute. I'm going to connect the dots.",
+            "2.1": "5 minutes of quiet. Cameras off if you want. No one sees this but you.",
+            "2.2": "Stay with it. Go a little deeper.",
+            "3.1": "Take 30 seconds, then we'll go into breakouts.",
+            "3.2": "Welcome back. 30 seconds to capture what just happened.",
+            "4.1": "Read through, select your diagnosis, then back to breakouts.",
+            "4.2": "Welcome back. Capture one thing before whole-group.",
+            "5.1": "Look up. Let's talk.",
+            "6.1": "Last screen. One commitment. Drop it in chat too."
+        };
+
+        const MODE_LABEL = { static: "Listen / Read", listen: "Listen Mode", interactive: "Your turn — write" };
+
+        // Screen Components
+        function Screen_1_1({ next }) { return e('div', { className: 'screen-content' }, e('h1', null, 'Welcome'), e('p', null, 'Welcome to Session 9: Reframing Reality'), e('button', { className: 'button', onClick: next }, 'Start')); }
+        function Screen_1_2({ next, state, set }) { return e('div', { className: 'screen-content' }, e('h1', null, '"If Only" Generator'), e('p', null, 'Complete the sentence: "If only..."'), e('input', { type: 'text', className: 'input-field', placeholder: 'Type here...', onChange: (evt) => set({ ifOnly: evt.target.value }), value: state.ifOnly || '' }), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_1_3({ next }) { return e('div', { className: 'screen-content' }, e('h1', null, 'The Bridge'), e('p', null, 'Listen as we connect the dots between your responses.'), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_2_1({ next, state, set }) { return e('div', { className: 'screen-content' }, e('h1', null, 'My Story, Turned Around'), e('p', null, 'How would you reframe your story?'), e('input', { type: 'text', className: 'input-field', placeholder: 'Type here...', onChange: (evt) => set({ story: evt.target.value }), value: state.story || '' }), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_2_2({ next, state, set }) { return e('div', { className: 'screen-content' }, e('h1', null, 'The Core Want'), e('p', null, 'What do you really want?'), e('input', { type: 'text', className: 'input-field', placeholder: 'Type here...', onChange: (evt) => set({ coreWant: evt.target.value }), value: state.coreWant || '' }), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_3_1({ next }) { return e('div', { className: 'screen-content' }, e('h1', null, 'Breakout 1 · Pre-thinking'), e('p', null, 'Take a moment to prepare for the breakout session.'), e('button', { className: 'button', onClick: next }, 'Ready')); }
+        function Screen_3_2({ next, state, set }) { return e('div', { className: 'screen-content' }, e('h1', null, 'Breakout 1 · Capture'), e('p', null, 'What just happened in your breakout?'), e('input', { type: 'text', className: 'input-field', placeholder: 'Type here...', onChange: (evt) => set({ breakout1: evt.target.value }), value: state.breakout1 || '' }), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_4_1({ next, state, set }) { return e('div', { className: 'screen-content' }, e('h1', null, 'Breakout 2 · Diagnostic'), e('p', null, 'What do you diagnose?'), e('input', { type: 'text', className: 'input-field', placeholder: 'Type here...', onChange: (evt) => set({ diagnosis: evt.target.value }), value: state.diagnosis || '' }), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_4_2({ next, state, set }) { return e('div', { className: 'screen-content' }, e('h1', null, 'Breakout 2 · Capture'), e('p', null, 'What\'s one thing you\'re taking away?'), e('input', { type: 'text', className: 'input-field', placeholder: 'Type here...', onChange: (evt) => set({ breakout2: evt.target.value }), value: state.breakout2 || '' }), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_5_1({ next }) { return e('div', { className: 'screen-content' }, e('h1', null, 'Whole-group Discussion'), e('p', null, 'Let\'s talk together about what we\'ve learned.'), e('button', { className: 'button', onClick: next }, 'Continue')); }
+        function Screen_6_1({ next, state, set }) { return e('div', { className: 'screen-content' }, e('h1', null, 'Commitment'), e('p', null, 'What\'s your one commitment?'), e('input', { type: 'text', className: 'input-field', placeholder: 'Type here...', onChange: (evt) => set({ commitment: evt.target.value }), value: state.commitment || '' }), e('button', { className: 'button', onClick: next }, 'Submit')); }
+
+        // Main App
+        function App() {
+            const [idx, setIdx] = React.useState(() => { const saved = localStorage.getItem('s9_idx'); return saved ? parseInt(saved) : 0; });
+            const [state, setState] = React.useState(() => { try { return JSON.parse(localStorage.getItem('s9_state') || '{}'); } catch { return {}; } });
+
+            React.useEffect(() => { localStorage.setItem('s9_idx', String(idx)); }, [idx]);
+            React.useEffect(() => { localStorage.setItem('s9_state', JSON.stringify(state)); }, [state]);
+
+            const set = (patch) => setState(s => ({ ...s, ...patch }));
+            const next = () => setIdx(i => Math.min(i + 1, SCREENS.length - 1));
+
+            const visited = {};
+            for (let i = 0; i <= idx; i++) visited[i] = true;
+
+            const screen = SCREENS[idx];
+            const showStrip = idx > 1 && state.coreWant && idx < 10;
+
+            const screenComponents = [
+                Screen_1_1, Screen_1_2, Screen_1_3, Screen_2_1, Screen_2_2,
+                Screen_3_1, Screen_3_2, Screen_4_1, Screen_4_2, Screen_5_1, Screen_6_1
+            ];
+
+            return e('div', { className: 'app' },
+                // Rail
+                e('aside', { className: 'rail' },
+                    e('div', { className: 'rail-brand' }, 'Session 9'),
+                    e('div', { className: 'rail-sub' }, 'Reframing reality'),
+                    SCREENS.map((s, i) => {
+                        const isFirst = i === 0 || SCREENS[i - 1].phase !== s.phase;
+                        return e(React.Fragment, { key: s.id },
+                            isFirst && e('div', { className: 'rail-section' }, s.phase),
+                            e('button', {
+                                key: s.id,
+                                className: 'rail-item' + (idx === i ? ' active' : '') + (visited[i] && idx !== i ? ' visited' : ''),
+                                onClick: () => setIdx(i)
+                            },
+                                e('span', { className: 'rail-num' }, s.id),
+                                e('span', { className: 'rail-title' }, s.title),
+                                e('span', { className: 'rail-time' }, s.time)
+                            )
+                        );
+                    })
+                ),
+                // Main
+                e('main', { className: 'stage' },
+                    e('div', { className: 'status' },
+                        e('span', { className: 'status-mode', 'data-mode': screen.mode },
+                            e('span', { className: 'status-dot' })
+                        ),
+                        e('span', { style: { minWidth: 110 } }, screen.id + ' · ' + MODE_LABEL[screen.mode]),
+                        e('span', { className: 'status-progress' },
+                            SCREENS.map((_, i) => e('span', {
+                                key: i,
+                                className: 'status-tick' + (i === idx ? ' active' : '') + (i < idx ? ' visited' : '')
+                            }))
+                        ),
+                        e('span', { className: 'status-cue' }, '*' + FACILITATOR_CUES[screen.id])
+                    ),
+                    e(screenComponents[idx], { next, state, set }),
+                    showStrip && e('div', { className: 'persisted' },
+                        'you\'re holding ',
+                        e('span', { className: 'pill' }, state.coreWant)
+                    )
+                )
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(e(App));
+    </script>
 </body>
 </html>
